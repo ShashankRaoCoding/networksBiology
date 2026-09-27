@@ -6,6 +6,12 @@ import (
 	"sync" 
 )
 
+func New() Network {
+	return Network{
+		Vertices: make(map[string]*vertex.Vertex) , 
+	}
+}
+
 type Network struct {
 	LogL float64
 	Vertices map[string]*vertex.Vertex
