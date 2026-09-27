@@ -12,17 +12,19 @@ import (
 	"gcp/funcs/benchmark"
 )
 
-func init() {
-	
+
+func main() {
 	f, err := os.Create("gcp.log") 
 	if err != nil {
 		fmt.Println("Unable to create gcp.log, printing to stdout") 
 		return 
+	} else {
+		
+		defer close(f) 
+		log.SetOutput(f) 
 	}
-	log.SetOutput(f) 
-}
 
-func main() {
+
 	var prior *network.Network 
 	var allData *eData.AllData
 	var err error 
@@ -32,7 +34,7 @@ func main() {
 		args.ExpressionPath, 
 	) 
 
-	prior, nulls, err = benchmark.Benchmark(prior, allData) 
+	prior, nulls, err = benchmark.CalcLogLs(prior, allData) 
 	if err != nil {
 		log.Println(err)
 		os.Exit(1) 
