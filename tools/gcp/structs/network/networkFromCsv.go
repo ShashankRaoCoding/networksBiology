@@ -24,6 +24,41 @@ func NetworkFromCsv(networkPath string, sep string) (*Network, error) {
 	defer close(f) 
 
 	reader := bufio.NewReader(f) 
+
+	line, err := reader.ReadString('\n')
+	if err == io.EOF {
+		log.Printf("Network data is empty\n") 
+		return n, fmt.Errorf("Network data is empty")
+	} else if err != nil {
+		log.Printf("Unexpected Error: Could not read network data: %s\n", err) 
+		return n, err 
+	}
+	
+	columns := map[string]int{
+		"from": -1,
+		"to": -1,
+	} 
+	
+	values := strings.Split(line, ",") 
+	if len(values) < 2 {
+		log.Printf("Fewer than 2 columns\n") 
+		return n, fmt.Errorf("Fewer than 2 coloumns") 
+	}
+	
+	for i, v := range values {
+		_, o := columns[v]
+		if o {
+			columns[v] = i 
+		}
+	}
+
+	for c, i := range columns {
+		if i == -1 {
+			log.Printf("%s with index of -1", c) 
+			return n, fmt.Errorf("Data must have column %s", c) 
+		}
+	}
+
 	for {
 		line , err := reader.ReadString('\n') 
 		line = strings.TrimSuffix(line, "\n")
